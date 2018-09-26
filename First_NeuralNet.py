@@ -197,7 +197,7 @@ class NeuralNet:
         
         return self.output
 
-
+# Checking outputs
 layer = 2
 expect = 1
 a = np.array([[1, 2, 3],[5, 8, 6], [1, 7, 5]])
