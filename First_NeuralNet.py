@@ -9,9 +9,9 @@ class NeuralNet:
     # Number of inputs and outputs need to be specified as lists
     def __init__(self, inputs, outputs, layers, nodes):
         self.input = inputs
-        print self.input
+        print(self.input)
         self.output = outputs
-        print self.output
+        print(self.output)
         self.outbias = 0
         self.nodes = nodes
         self.learningRate = 0.5
