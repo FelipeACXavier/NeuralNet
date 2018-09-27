@@ -12,10 +12,10 @@ class NeuralNet:
         self.hiddenErrors = [] # list
         for i in range(self.layers + 1): # hidden_calc
                 self.hidden_calc.append(1)
-        for i in range(self.layers+1): # hiddenErrors
+        for i in range(self.layers): # hiddenErrors
             self.hiddenErrors.append(1)
 
-        self.learningRate = 0.5
+        self.learningRate = 0.9
 
         self.inputWeights = self.setWeights(2, self.inputs, self.nodes) # list of np.array
         self.hiddenWeights = self.setWeights(self.layers, self.nodes, self.nodes) # list of np.array
@@ -48,19 +48,23 @@ class NeuralNet:
     def sigmoid(self, x):
         return 1/(1 + np.exp(-x))
 
+    def dsigmoid(self, x):
+        return x*(1-x)
+    
+    # Feed the input from layer to layer until the output
     def feedForward(self, input): 
-        #print(input)
+        self.imp = input
         for i in range(self.layers + 1):
             if i is 0:
                 self.hidden_calc[i] = np.dot(self.inputWeights[0], input)
-                self.hidden_calc[i] = self.sigmoid(np.add(self.hidden_calc[i], self.hiddenBias[0])) 
+                self.hidden_calc[i] = np.asarray(self.sigmoid(np.add(self.hidden_calc[i], self.hiddenBias[0]))) 
             elif i is self.layers:
-                self.hidden_calc[i] = np.dot(self.outputWeights[0], self.hidden_calc[i - 1])
-                self.hidden_calc[i] = self.sigmoid(np.add(self.hidden_calc[i], self.outputBias)) 
+                self.hidden_calc[i] = np.dot( self.outputWeights[0], self.hidden_calc[i - 1])
+                self.hidden_calc[i] = np.asarray(self.sigmoid(np.add(self.hidden_calc[i], self.outputBias))) 
             else:
                 self.hidden_calc[i] = np.dot(self.hiddenWeights[i - 1], self.hidden_calc[i - 1])
-                self.hidden_calc[i] = self.sigmoid(np.add(self.hidden_calc[i - 1], self.hiddenBias[i]))
-            #print("Current node: " + str(self.hidden_calc[i]))
+                self.hidden_calc[i] = np.asarray(self.sigmoid(np.add(self.hidden_calc[i - 1], self.hiddenBias[i])))
+        # print("Hidden_Calc: " + str(self.hidden_calc))
         return np.asarray(self.hidden_calc[self.layers])
 
     def train(self, inputs, target):
@@ -68,29 +72,49 @@ class NeuralNet:
         self.out = self.feedForward(inputs)
         self.outputErrors = np.subtract(self.out, target)
         
-        # Hidden layers errors
-        for i in range(self.layers+1):
+        # Hidden layers node errors ------------------------------------------------------------------------
+        for i in range(self.layers):
             if i is 0:
-                self.hiddenErrors[i] = np.dot(self.outputWeights[0].T , self.outputErrors)
-            elif i is self.layers:
-                self.hiddenErrors[i] = np.dot(self.inputWeights[0].T , self.hiddenErrors[i-1])
+                self.hiddenErrors[i] = np.dot( self.outputWeights[0].T, self.outputErrors.T)
+           # elif i is self.layers:
+           #     self.hiddenErrors[i] = np.dot(self.inputWeights[0].T , self.hiddenErrors[i-1])
             else:
-                self.hiddenErrors[i] = np.dot(self.hiddenWeights[self.layers-1-i].T, self.hiddenErrors[i-1])
+                self.hiddenErrors[i] = np.dot(self.hiddenErrors[i-1].T, self.hiddenWeights[self.layers-1-i].T)
+        # --------------------------------------------------------------------------------------------------
+        self.update()
         return self.hiddenErrors
     
+    def update(self):
+        # Update output weights
+        a = self.learningRate * np.multiply(self.outputErrors, self.dsigmoid(self.hidden_calc[self.layers]))
+        b = self.hidden_calc[self.layers - 1][np.newaxis]
+        self.outputWeights -= np.dot(a.T, b)
+        
+        # Update hidden weights
+        for i in range(self.layers - 1):
+            a = self.learningRate * np.multiply(self.hiddenErrors[i], self.dsigmoid(self.hidden_calc[self.layers-1-i]))
+            self.hiddenWeights[i] -= np.dot(a, self.hidden_calc[self.layers - 1])
+        
+        # Update input weights
+        a = self.learningRate * np.multiply(self.hiddenErrors[self.layers-1], self.dsigmoid(self.hidden_calc[0]))
+        #if len(a) == 1:
+         #   a = a.item()
+        self.inputWeights -= np.dot(a, self.imp)
+
     def Error(self, weight, which):
         for i in range(len(weight)):
             denominator += weight[i]
-
         return weight[which]/denominator
 
 n = NeuralNet(2, 1, 2, 2)
-#print("Input: " + str(n.inputWeights))
-#print("Hidden: " + str(n.hiddenWeights))
-#print("Ouput: " + str(n.outputWeights[0].T))
+print("Input: " + str(n.inputWeights))
+print("Hidden: " + str(n.hiddenWeights))
+print("Ouput: " + str(n.outputWeights))
 #print(n.outputBias)
 #print("Bias: " + str(n.hiddenBias))
 #print("train data: " + str(n.feedForward([1,2])))
 #for i in range(3):
 #print(n.feedForward([1, 0]))
-print(n.train([1, 0], [1]))
+for i in range(100):
+    n.train([1, 0], [1])
+    print("Result: " + str(n.hidden_calc[n.layers]))
