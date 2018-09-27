@@ -203,10 +203,23 @@ expect = 1
 a = np.array([[1, 2, 3],[5, 8, 6], [1, 7, 5]])
 b = np.array([[3, 4, 2],[4, 8, 5], [3, 7, 1]])
 n = NeuralNet([1, 2],[1, 2], layer, 3)
+
+der = [{"input":[0,0], "target":[0]},
+        {"input":[0,1], "target":[1]},
+        {"input":[1,0], "target":[1]},
+        {"input":[1,1], "target":[0]}]
+        
 for i in range(10):
-    print("OUTPUT: " + str(n.guess(expect)))
+    a = np.random.randint(0,4)
+    print(der[a]["input"])
+    print(der[a]["target"])
+    n.guess(der[a]["input"], der[a]["target"])
     n.learn()
-    print("Cost: " + str(n.cost()) + "\n")
+
+print(n.guess([0,0], [0]))
+print(n.guess([0,1], [1]))
+print(n.guess([1,0], [1]))
+print(n.guess([1,1], [0]))
 
     
 
