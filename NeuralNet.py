@@ -73,11 +73,26 @@ class NeuralNet:
         for i in range(self.length - 1):
                 self.weights[i] += self.error[self.length-2-i]
 
-            
+    def save(self, name):
+        file = open(name, 'w')
+        file.write(str(self.weights))
+        file.write('\n')
+        file.write(str(self.bias))
+        file.close()
+
+    def load(self, name):
+        file = open(name,'r')
+        a = file.read()
+        b = a.split('\n')
+        print(b)
+        #self.bias = file.read()
+        file.close()
+
 # ---------------------------------------------------------
 # ---------------------------------------------------------
 # ---------------------------------------------------------
 n = NeuralNet([2, 2, 1])
+"""
 der = [{"input":[0,0], "target":[0]},
         {"input":[0,1], "target":[1]},
         {"input":[1,0], "target":[1]},
@@ -94,4 +109,6 @@ print(n.feedForward([0,0]))
 print(n.feedForward([0,1]))
 print(n.feedForward([1,0]))
 print(n.feedForward([1,1]))
-#print("weight: "+ str(n.weights))
+"""
+n.save('xor.txt')
+#print("weight: "+ str(n.weights)) 
