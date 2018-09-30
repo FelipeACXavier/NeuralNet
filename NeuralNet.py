@@ -11,7 +11,7 @@ class NeuralNet:
         for _ in range(self.length - 1):
             self.nodes.append(1)
             self.error.append(1)
-        self.learningRate = 1
+        self.learningRate = 0.5
         self.bias = [np.random.randn(y, 1) for y in layers[1:]]
         self.weights = [np.random.randn(y, x) for x, y in zip(layers[:-1], layers[1:])]     
           
@@ -40,6 +40,7 @@ class NeuralNet:
             
         return self.nodes[-1]
 
+    # Used for the backpropagation
     def train(self, input, target):
         out = self.feedForward(input)
         # (output - target) --> finds the difference between what we want and what it calculated
@@ -69,58 +70,36 @@ class NeuralNet:
 
         return outputError
 
+    # Add the necessary change in weights
     def update(self):
         for i in range(self.length - 1):
                 self.weights[i] += self.error[self.length-2-i]
-
+    
+    # save weight and bias for further use
     def save(self, name):
         file = open(name, 'wb')
+        # save to txt file (so we can read)
+        name = name.split('.', 2)
+        self.saveText(name[0]+'.txt')
+
         # save to npy file
         np.save(file, self.weights)
         np.save(file, self.bias)
         file.close()
 
+    # save to readable txt file
     def saveText(self,name):
         file = open(name, 'w')
-        # save to readable txt file
         file.write("Weights: " + str(self.weights))
         file.write('\n')
         file.write('Bias: ' + str(self.bias))
         file.close()
     
+    # Load weights and bias to current network
     def load(self, name):
         file = open(name,'rb')
         self.weights = np.load(file)
         self.bias = np.load(file)
-        #print("weight: "+ str(self.weights))
-        #print("Bias: "+ str(self.bias))
-        #print(self.weights.shape)
-        #print(self.bias.shape)
-
-        #self.bias = file.read()
         file.close()
 
 # ---------------------------------------------------------
-# ---------------------------------------------------------
-# ---------------------------------------------------------
-'''n = NeuralNet([2, 2, 1])
-der = [{"input":[0,0], "target":[0]},
-        {"input":[0,1], "target":[1]},
-        {"input":[1,0], "target":[1]},
-        {"input":[1,1], "target":[0]}]
-#print("weight: "+ str(n.weights))
-
-for i in range(10000):
-    a = np.random.randint(0,4)
-    #print(der[a]["input"] + der[a]["target"])
-    n.train(der[a]["input"], der[a]["target"])
-
-
-print(n.feedForward([0,0]))
-print(n.feedForward([0,1]))
-print(n.feedForward([1,0]))
-print(n.feedForward([1,1]))
-
-n.save('xor.npy')
-n.saveText('xor.txt')'''
-#print("weight: "+ str(n.weights))
