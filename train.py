@@ -10,7 +10,7 @@ der = [{"input":[0,0,0], "target":[0,0]},
 # Initialize network
 n = NeuralNet([3, 3, 3, 2])
 n.setLearningRate(0.8)
-n.loadNpy('threeInputsTest.npy')
+n.loadNpy('/home/felipe_xavier/Projects/NeuralNet/TrainData/threeInputsTest.npy')
 runcycles = 10000
 
 # for i in range(runcycles):
