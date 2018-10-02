@@ -24,5 +24,5 @@ print(n.feedForward([0,1]))
 print(n.feedForward([1,0]))
 print(n.feedForward([1,1]))
 
-n.save('xor.npy')
+n.saveNpy('xor.npy')
 #n.saveText('xor.txt')

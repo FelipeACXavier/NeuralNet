@@ -76,19 +76,15 @@ class NeuralNet:
                 self.weights[i] += self.error[self.length-2-i]
     
     # save weight and bias for further use
-    def save(self, name):
+    def saveNpy(self, name):
         file = open(name, 'wb')
-        # save to txt file (so we can read)
-        name = name.split('.', 2)
-        self.saveText(name[0]+'.txt')
-
         # save to npy file
         np.save(file, self.weights)
         np.save(file, self.bias)
         file.close()
 
     # save to readable txt file
-    def saveText(self,name):
+    def saveTxt(self,name):
         file = open(name, 'w')
         file.write("Weights: " + str(self.weights))
         file.write('\n')
@@ -96,10 +92,17 @@ class NeuralNet:
         file.close()
     
     # Load weights and bias to current network
-    def load(self, name):
+    def loadNpy(self, name):
         file = open(name,'rb')
         self.weights = np.load(file)
         self.bias = np.load(file)
+        file.close()
+    
+    # Load weights and bias to current network
+    def loadTxt(self, name):
+        file = open(name,'r')
+        self.weights = np.loadtxt(file, dtype='float')
+        self.bias = np.loadtxt(file, dtype='float')
         file.close()
 
 # ---------------------------------------------------------

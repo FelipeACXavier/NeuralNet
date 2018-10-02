@@ -2,7 +2,7 @@ from NeuralNet import NeuralNet
 
 n = NeuralNet([2, 2, 1])
 
-n.load('xor.npy')
+n.loadNpy('xor.npy')
 #print("weight: "+ str(n.weights))
 #print("Bias: "+ str(n.bias))
 
