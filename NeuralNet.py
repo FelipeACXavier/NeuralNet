@@ -37,7 +37,7 @@ class NeuralNet:
             # print("self.nodes: " + str(input))
             self.nodes[i] = self.sigmoid(np.dot(self.weights[i], input) + self.bias[i])
             input = self.nodes[i]
-            
+        # return the last node (the output)    
         return self.nodes[-1]
 
     # Used for the backpropagation
